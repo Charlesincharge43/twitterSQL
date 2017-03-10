@@ -65,15 +65,23 @@ module.exports = function makeRouterWithSockets (io) {
   router.post('/tweets', function(req, res, next){
     client.query(`SELECT * FROM users WHERE name=$1`, [req.body.name], function(err, result){
       if(err) return next(err);
+        function createNewUser(){
+            var picUrl = 'http://lorempixel.com/400/200/nature/'+req.body.name;
+            client.query(`
+                INSERT INTO users (name, picture_url)
+                VALUES ($1, $2)`, [req.body.name, picUrl], insertTweet);
+        }
 
+        function insertTweet(err, data){
+            const userId = data.rows[0].id;
+            client.query('INSERT INTO tweets (user_id, content) VALUES ($1, $2)', [userId, req.body.text], function(err){
+                if(err) return next(err);
+                res.redirect('/');
+            });
+        }
       // If user doesn't exist, insert him into db
       if(result.rows.length === 0){
-        console.log('inside');
-        client.query(`
-          INSERT INTO users (name)
-          VALUES ($1)`, [req.body.name], function(err, result){
-            if(err) return next(err);
-          });
+        createNewUser();
       } // end insert
 
       client.query(`
