@@ -7,7 +7,7 @@ module.exports = function makeRouterWithSockets (io) {
 
   // a reusable function
   function respondWithAllTweets (req, res, next){
-    client.query('SELECT users.name, t.content, t.id FROM tweets AS t JOIN users ON t.user_id=users.id ORDER BY t.id DESC LIMIT 10', function (err, result) {
+    client.query('SELECT users.name, t.content, t.id, users.picture_url FROM tweets AS t JOIN users ON t.user_id=users.id ORDER BY t.id DESC LIMIT 10', function (err, result) {
       if (err) return next(err); // pass errors to Express
       let tweets = result.rows;
       res.render('index', {
@@ -69,7 +69,9 @@ module.exports = function makeRouterWithSockets (io) {
             var picUrl = 'http://lorempixel.com/400/200/nature/'+req.body.name;
             client.query(`
                 INSERT INTO users (name, picture_url)
-                VALUES ($1, $2)`, [req.body.name, picUrl], insertTweet);
+                VALUES ($1, $2)`, [req.body.name, picUrl], function(err, data){
+                    if(err) return next(err);
+                });
         }
 
         function insertTweet(err, data){
