@@ -1,14 +1,14 @@
 'use strict';
-var express = require('express');
-var app = express();
-var morgan = require('morgan');
-var nunjucks = require('nunjucks');
-var makesRouter = require('./routes');
-var fs = require('fs');
-var path = require('path');
-var mime = require('mime');
-var bodyParser = require('body-parser');
-var socketio = require('socket.io');
+const express = require('express');
+const app = express();
+const morgan = require('morgan');
+const nunjucks = require('nunjucks');
+const makesRouter = require('./routes');
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime');
+const bodyParser = require('body-parser');
+const socketio = require('socket.io');
 
 // templating boilerplate setup
 app.engine('html', nunjucks.render); // how to render html templates
@@ -24,10 +24,10 @@ app.use(bodyParser.json()); // would be for AJAX requests
 
 
 // start the server
-var server = app.listen(1337, function(){
+let server = app.listen(1337, function(){
   console.log('listening on port 1337');
 });
-var io = socketio.listen(server);
+let io = socketio.listen(server);
 
 app.use(express.static(path.join(__dirname, '/public')));
 

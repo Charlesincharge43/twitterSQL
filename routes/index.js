@@ -1,17 +1,15 @@
 'use strict';
-var express = require('express');
-var router = express.Router();
-//var tweetBank = require('../tweetBank');
-var client = require('../db/index.js')
+const express = require('express');
+const router = express.Router();
+const client = require('../db/index.js')
 
 module.exports = function makeRouterWithSockets (io) {
 
   // a reusable function
   function respondWithAllTweets (req, res, next){
-    // var allTheTweets = tweetBank.list();
     client.query('SELECT users.name, t.content, t.id FROM tweets AS t JOIN users ON t.user_id=users.id ORDER BY t.id DESC LIMIT 10', function (err, result) {
       if (err) return next(err); // pass errors to Express
-      var tweets = result.rows;
+      let tweets = result.rows;
       res.render('index', {
         title: 'Twitter.js',
         tweets: tweets,
@@ -26,7 +24,6 @@ module.exports = function makeRouterWithSockets (io) {
 
   // single-user page
   router.get('/users/:username', function(req, res, next){
-    // var tweetsForName = tweetBank.find({ name: req.params.username });
     client.query(`
       SELECT u.name, t.content, t.id
       FROM tweets AS t
@@ -35,7 +32,7 @@ module.exports = function makeRouterWithSockets (io) {
       WHERE u.name=$1`, [req.params.username], function(err, result){
       if (err) return next(err);
 
-      var tweets = result.rows;
+      let tweets = result.rows;
 
       res.render('index', {
         title: 'Twitter.js',
@@ -48,7 +45,6 @@ module.exports = function makeRouterWithSockets (io) {
 
   // single-tweet page
   router.get('/tweets/:id', function(req, res, next){
-    // var tweetsWithThatId = tweetBank.find({ id: Number(req.params.id) });
     client.query(`
       SELECT u.name, t.content, t.id
       FROM tweets AS t
@@ -56,7 +52,7 @@ module.exports = function makeRouterWithSockets (io) {
       ON t.user_id=u.id
       WHERE t.id=$1`, [req.params.id], function(err, result){
       if (err) return next(err);
-      var tweets = result.rows;
+      let tweets = result.rows;
       res.render('index', {
         title: 'Twitter.js',
         tweets: tweets // an array of only one element ;-)
@@ -67,7 +63,6 @@ module.exports = function makeRouterWithSockets (io) {
 
   // create a new tweet
   router.post('/tweets', function(req, res, next){
-    // var newTweet = tweetBank.add(req.body.name, req.body.text);
     client.query(`SELECT * FROM users WHERE name=$1`, [req.body.name], function(err, result){
       if(err) return next(err);
 
@@ -88,7 +83,7 @@ module.exports = function makeRouterWithSockets (io) {
          WHERE name=$1),  $2) RETURNING id`, [req.body.name, req.body.text], function(err, result){
           if(err) return next(err);
           console.log(result);
-          var newTweet = {
+          let newTweet = {
             name: req.body.name,
             text: req.body.text,
             id: result.rows[0].id

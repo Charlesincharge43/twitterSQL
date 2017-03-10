@@ -1,6 +1,6 @@
 const pg = require('pg');
-var postgresUrl = 'postgres://localhost/twitterbankdb';
-var client = new pg.Client(postgresUrl);
+const postgresUrl = 'postgres://localhost/twitterbankdb';
+const client = new pg.Client(postgresUrl);
 
 client.connect(function(err){
   console.log('connected');
